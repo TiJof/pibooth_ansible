@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Vers le cloud
+RSYNC_PASSWORD="{{ client_passwd }}" rsync -aHs -v {{ general_pibooth_directory }}/. rsync://{{ client_login }}@{{ domain }}/{{ client_login }}
+
+# Vers la clé USB
+if [ -d /media/pi/* ] ; then rsync -aHs -v {{ general_pibooth_directory }}/. /media/pi/*/ ; fi

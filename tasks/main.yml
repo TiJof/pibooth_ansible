@@ -1,0 +1,140 @@
+---
+
+- name: Install prereqs
+  ansible.builtin.package:
+    name: "{{ pibooth_prereqs }}"
+    state: latest
+
+- name: Remove prereqs not wanted
+  ansible.builtin.package:
+    name: "{{ pibooth_prereqs_no }}"
+    state: absent
+
+- name: Get the gphoto2 script
+  get_url:
+    url: https://raw.github.com/gonzalo/gphoto2-updater/master/gphoto2-updater.sh
+    dest: /tmp/gphoto2-updater.sh
+    mode: '0700'
+
+- name: Get the vars variable
+  get_url:
+    url: https://raw.githubusercontent.com/gonzalo/gphoto2-updater/master/.env
+    dest: /tmp/.env
+    mode: '0700'
+
+- name: Install gphoto2
+  ansible.builtin.shell:
+    chdir: /tmp
+    cmd: /tmp/gphoto2-updater.sh --stable
+
+- name: Clone pibooth repo
+  ansible.builtin.git:
+    force: yes
+    repo: "{{ pibooth_git }}"
+    dest: "/tmp/pibooth"
+    version: "{{ pibooth_version }}"
+    depth: 1
+
+- name: Patch pibooth to disable menu
+  ansible.builtin.lineinfile:
+    path: /tmp/pibooth/pibooth/booth.py
+    regexp: 'self._menu.show()'
+    state: absent
+
+- name: Install PiBooth
+  pip:
+    executable: pip3
+    state: latest
+    name: "{{ pibooth_pip }}"
+
+- name: Configure cups
+  ansible.builtin.command: "cupsctl --remote-admin"
+
+- name: Restart cups
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: yes
+    name: cups
+
+- name: Auto-Start PiBooth
+  copy:
+    src: autostart
+    dest: /etc/xdg/lxsession/LXDE-pi/autostart
+    group: root
+    owner: root
+    mode: 0644
+
+- name: Create PiBooth config dir
+  ansible.builtin.file:
+    path: '~{{ pibooth_user }}/.config/pibooth'
+    owner: '{{ pibooth_user }}'
+    group: '{{ pibooth_user }}'
+    mode: 0700
+    state: directory
+
+- name: Configure PiBooth
+  ansible.builtin.template:
+    src: pibooth.j2
+    dest: '~{{ pibooth_user }}/.config/pibooth/pibooth.cfg'
+    owner: '{{ pibooth_user }}'
+    group: '{{ pibooth_user }}'
+    mode: 0600
+
+- name: Create the Pibooth photo directory
+  ansible.builtin.file:
+    path: "{{ general_pibooth_directory }}"
+    owner: '{{ pibooth_user }}'
+    group: '{{ pibooth_user }}'
+    mode: 0750
+    state: directory
+
+- name: Mount /boot in ReadWrite
+  ansible.posix.mount:
+    path: /boot
+    opts: rw
+    state: remounted
+
+- name: Enable the Pi's camera
+  blockinfile:
+    path: /boot/config.txt
+    block: |
+      start_x=1
+      gpu_mem=256
+      disable_camera_led=1
+      dtoverlay=gpio-shutdown,gpio_pin=3
+
+- name: Remount /boot in ReadOnly
+  ansible.posix.mount:
+    path: /boot
+    opts: ro
+    state: remounted
+
+#- name: Allow pi for incron
+#  ansible.builtin.lineinfile:
+#    path: /etc/incron.allow
+#    line: "{{ pibooth_user }}"
+#    owner: root
+#    group: incron
+#    mode: '0640'
+#
+#- name: Create incron script
+#  ansible.builtin.template:
+#    src: synctocloud.j2
+#    dest: '/usr/local/bin/synctocloud.sh'
+#    owner: 'root'
+#    group: 'root'
+#    mode: 0755
+#
+#- name: Create incron for pi user
+#  ansible.builtin.template:
+#    src: incron.j2
+#    dest: '/var/spool/incron/{{ pibooth_user }}'
+#    owner: 'pi'
+#    group: 'incron'
+#    mode: 0600
+#
+#- name: Restart incron
+#  ansible.builtin.systemd:
+#    state: restarted
+#    daemon_reload: yes
+#    name: incron

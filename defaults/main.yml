@@ -1,0 +1,70 @@
+pibooth_prereqs: python3-opencv,cups,libcups2-dev,python3-opencv,libsdl2-ttf-2.0-0,vim,python3-gphoto2,libsdl2-dev,libsdl2-ttf-dev,libsdl2-image-dev,libportmidi-dev,libsdl2-mixer-dev
+pibooth_prereqs_no: gvfs-backends
+#pibooth_pip: pibooth[slr,printer],pibooth-extra-lights,pibooth-picture-template,pibooth-qrcode
+pibooth_pip: /tmp/pibooth,pibooth-extra-lights,pibooth-picture-template,pibooth-qrcode,pycups-notify
+pibooth_user: pi
+pibooth_git: https://github.com/pibooth/pibooth
+pibooth_version: 2.0.5
+
+general_pibooth_language: fr
+general_pibooth_directory: ~{{ pibooth_user }}/Pictures/pibooth
+general_pibooth_autostart: True
+general_pibooth_debug: False
+general_pibooth_plugins:
+general_pibooth_plugins_disabled:
+general_pibooth_vkeyboard: False
+window_pibooth_size: fullscreen
+window_pibooth_background: (0, 0, 0)
+window_pibooth_text_color: (255, 255, 255)
+window_pibooth_flash: True
+window_pibooth_animate: True
+window_pibooth_animate_delay: 0.2
+window_pibooth_finish_image_delay: 10
+window_pibooth_wait_picture_delay: -1
+window_pibooth_chosen_delay: 4
+window_pibooth_arrows: top
+window_pibooth_arrows_x_offset: 0
+window_pibooth_preview_delay: 3
+window_pibooth_preview_countdown: True
+window_pibooth_preview_stop_on_capture: False
+picture_pibooth_orientation: auto
+picture_pibooth_captures: (4, 1)
+picture_pibooth_captures_effects: none
+picture_pibooth_captures_cropping: False
+picture_pibooth_margin_thick: 100
+picture_pibooth_footer_text1: 10 ans
+picture_pibooth_footer_text2: Aurélia et Geoffroy
+picture_pibooth_text_colors: (0, 0, 0)
+picture_pibooth_text_fonts: ('Amatic-Bold', 'AmaticSC-Regular')
+picture_pibooth_text_alignments: center
+picture_pibooth_overlays:
+picture_pibooth_backgrounds: (255, 255, 255)
+picture_pibooth_template: picture_template.xml
+camera_pibooth_iso: 100
+camera_pibooth_flip: False
+camera_pibooth_rotation: 0
+camera_pibooth_resolution: (1934, 2464)
+camera_pibooth_delete_internal_memory: False
+printer_pibooth_printer_name: default
+printer_pibooth_printer_options: {}
+printer_pibooth_printer_delay: 10
+printer_pibooth_auto_print: 0
+printer_pibooth_max_pages: -1
+printer_pibooth_max_duplicates: 2
+printer_pibooth_pictures_per_page: 1
+controls_pibooth_debounce_delay: 0.3
+controls_pibooth_multi_press_delay: 0.5
+controls_pibooth_picture_btn_pin: 11
+controls_pibooth_picture_led_pin: 7
+controls_pibooth_print_btn_pin: 13
+controls_pibooth_print_led_pin: 15
+controls_pibooth_startup_led_pin: 29
+controls_pibooth_preview_led_pin: 31
+controls_pibooth_flash_led_pin: 33
+qrcode_pibooth_prefix_url: http://{{ client_login}}.{{ domain }}/public/{picture}
+qrcode_pibooth_foreground: (255, 255, 255)
+qrcode_pibooth_background: (0, 0, 0)
+qrcode_pibooth_side_text: Scannez-moi
+qrcode_pibooth_offset: (20, 40)
+qrcode_pibooth_wait_location: bottomleft
+qrcode_pibooth_print_location: bottomright
