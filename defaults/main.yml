@@ -1,5 +1,4 @@
-pibooth_prereqs: python3-opencv,cups,libcups2-dev,python3-opencv,libsdl2-ttf-2.0-0,vim,\
-                  python3-gphoto2,libsdl2-dev,libsdl2-ttf-dev,libsdl2-image-dev,libportmidi-dev,libsdl2-mixer-dev,incron,python3-pip,feh
+pibooth_prereqs: python3-opencv,cups,libcups2-dev,python3-opencv,libsdl2-ttf-2.0-0,vim,python3-gphoto2,libsdl2-dev,libsdl2-ttf-dev,libsdl2-image-dev,libportmidi-dev,libsdl2-mixer-dev,incron,python3-pip,feh
 pibooth_prereqs_no: gvfs-backends
 # pibooth_pip: pibooth[slr,printer],pibooth-extra-lights,pibooth-picture-template,pibooth-qrcode
 pibooth_pip: /tmp/pibooth,pibooth-extra-lights,pibooth-picture-template,pibooth-qrcode,pycups-notify
