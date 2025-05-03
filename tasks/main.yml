@@ -71,7 +71,6 @@
   ansible.builtin.pip:
     executable: pip3
     state: present
-    version: "{{ pibooth_version }}"
     name: "{{ pibooth_pip }}"
 
 - name: Configure cups
