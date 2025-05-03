@@ -1,0 +1,23 @@
+#!/bin/bash
+
+while true ; do
+feh \
+    --geometry \
+$(xrandr | grep HDMI-2 -A1 | tail -1 | awk '{ print $1 }' | sed 's/x.*//g')\
+x\
+$(xrandr | grep HDMI-2 -A1 | tail -1 | awk '{ print $1 }' | sed 's/.*x//g')\
++\
+$(xrandr | grep HDMI-1 -A1 | tail -1 | awk '{ print $1 }' | sed 's/x.*//g') \
+    --no-menus \
+    --image-bg black \
+    --randomize \
+    --quiet \
+    --no-recursive \
+    --reload 1 \
+    --slideshow-delay 2 \
+    --auto-zoom \
+    --borderless \
+    --hide-pointer \
+    --on-last-slide resume \
+    /home/pi/Pictures/pibooth/
+done

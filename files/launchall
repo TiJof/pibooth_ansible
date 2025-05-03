@@ -1,0 +1,12 @@
+#!/bin/bash
+# Screen configuration
+#xrandr --output HDMI-1 --mode $(xrandr | grep HDMI-1 -A1 | tail -1 | awk '{ print $1 }') --output HDMI-2 --mode $(xrandr | grep HDMI-2 -A1 | tail -1 | awk '{ print $1 }') --right-of HDMI-1
+#
+## Correct mapping for touchscreen
+#xinput --map-to-output 6 HDMI-1
+#
+# pibooth
+pibooth &
+
+## slideshow
+#/usr/local/bin/slideshow

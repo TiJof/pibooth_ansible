@@ -2,7 +2,8 @@ xset s off
 xset s noblank
 xset -dpms
 
-pibooth
+/usr/local/bin/launchall
+
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
 #@xscreensaver -no-splash

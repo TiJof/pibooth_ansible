@@ -1,35 +1,61 @@
 ---
 
+# - name: Validate raspbian version
+#
+# - name: Validate raspbian not lite
+#
+
+- name: Disable first run wizard
+  ansible.builtin.file:
+    path: /etc/xdg/autostart/piwiz.desktop
+    state: absent
+
 - name: Install prereqs
   ansible.builtin.package:
     name: "{{ pibooth_prereqs }}"
-    state: latest
+    state: present
 
 - name: Remove prereqs not wanted
   ansible.builtin.package:
     name: "{{ pibooth_prereqs_no }}"
     state: absent
 
+- name: Copy slideshow's script
+  ansible.builtin.copy:
+    src: slideshow
+    dest: '/usr/local/bin/slideshow'
+    owner: 'root'
+    group: 'root'
+    mode: "0755"
+
+- name: Copy startup script
+  ansible.builtin.copy:
+    src: launchall
+    dest: '/usr/local/bin/launchall'
+    owner: 'root'
+    group: 'root'
+    mode: "0755"
+
 - name: Get the gphoto2 script
-  get_url:
+  ansible.builtin.get_url:
     url: https://raw.github.com/gonzalo/gphoto2-updater/master/gphoto2-updater.sh
     dest: /tmp/gphoto2-updater.sh
-    mode: '0700'
+    mode: "0700"
 
 - name: Get the vars variable
-  get_url:
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/gonzalo/gphoto2-updater/master/.env
     dest: /tmp/.env
-    mode: '0700'
+    mode: "0700"
 
-- name: Install gphoto2
-  ansible.builtin.shell:
+- name: Install gphoto2 # noqa: no-changed-when
+  ansible.builtin.command:
     chdir: /tmp
     cmd: /tmp/gphoto2-updater.sh --stable
 
 - name: Clone pibooth repo
   ansible.builtin.git:
-    force: yes
+    force: true
     repo: "{{ pibooth_git }}"
     dest: "/tmp/pibooth"
     version: "{{ pibooth_version }}"
@@ -42,34 +68,35 @@
     state: absent
 
 - name: Install PiBooth
-  pip:
+  ansible.builtin.pip:
     executable: pip3
-    state: latest
+    state: present
+    version: "{{ pibooth_version }}"
     name: "{{ pibooth_pip }}"
 
 - name: Configure cups
-  ansible.builtin.command: "cupsctl --remote-admin"
+  ansible.builtin.command: "cupsctl --remote-admin" # noqa: no-changed-when
 
 - name: Restart cups
   ansible.builtin.systemd:
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: cups
 
-- name: Auto-Start PiBooth
-  copy:
+- name: Auto-Start PiBooth and Slideshow
+  ansible.builtin.copy:
     src: autostart
     dest: /etc/xdg/lxsession/LXDE-pi/autostart
     group: root
     owner: root
-    mode: 0644
+    mode: "0644"
 
 - name: Create PiBooth config dir
   ansible.builtin.file:
     path: '~{{ pibooth_user }}/.config/pibooth'
     owner: '{{ pibooth_user }}'
     group: '{{ pibooth_user }}'
-    mode: 0700
+    mode: "0700"
     state: directory
 
 - name: Configure PiBooth
@@ -78,7 +105,7 @@
     dest: '~{{ pibooth_user }}/.config/pibooth/pibooth.cfg'
     owner: '{{ pibooth_user }}'
     group: '{{ pibooth_user }}'
-    mode: 0600
+    mode: "0600"
 
 - name: Create the Pibooth photo directory
   ansible.builtin.file:
@@ -95,7 +122,7 @@
     state: remounted
 
 - name: Enable the Pi's camera
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /boot/config.txt
     block: |
       start_x=1
@@ -109,32 +136,32 @@
     opts: ro
     state: remounted
 
-#- name: Allow pi for incron
-#  ansible.builtin.lineinfile:
-#    path: /etc/incron.allow
-#    line: "{{ pibooth_user }}"
-#    owner: root
-#    group: incron
-#    mode: '0640'
-#
-#- name: Create incron script
-#  ansible.builtin.template:
-#    src: synctocloud.j2
-#    dest: '/usr/local/bin/synctocloud.sh'
-#    owner: 'root'
-#    group: 'root'
-#    mode: 0755
-#
-#- name: Create incron for pi user
-#  ansible.builtin.template:
-#    src: incron.j2
-#    dest: '/var/spool/incron/{{ pibooth_user }}'
-#    owner: 'pi'
-#    group: 'incron'
-#    mode: 0600
-#
-#- name: Restart incron
-#  ansible.builtin.systemd:
-#    state: restarted
-#    daemon_reload: yes
-#    name: incron
+- name: Allow pi for incron
+  ansible.builtin.lineinfile:
+    path: /etc/incron.allow
+    line: "{{ pibooth_user }}"
+    owner: root
+    group: incron
+    mode: "0640"
+
+- name: Create incron script
+  ansible.builtin.template:
+    src: synctocloud.j2
+    dest: '/usr/local/bin/synctocloud.sh'
+    owner: 'root'
+    group: 'root'
+    mode: "0755"
+
+- name: Create incron for pi user
+  ansible.builtin.template:
+    src: incron.j2
+    dest: '/var/spool/incron/{{ pibooth_user }}'
+    owner: 'pi'
+    group: 'incron'
+    mode: "0600"
+
+- name: Restart incron
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: incron
