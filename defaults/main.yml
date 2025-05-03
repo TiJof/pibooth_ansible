@@ -61,7 +61,7 @@ pibooth_controls_pibooth_print_led_pin: 15
 pibooth_controls_pibooth_startup_led_pin: 29
 pibooth_controls_pibooth_preview_led_pin: 31
 pibooth_controls_pibooth_flash_led_pin: 33
-pibooth_qrcode_pibooth_prefix_url: http://{{ client_login }}.{{ domain }}/public/{picture}
+pibooth_qrcode_pibooth_prefix_url: http://{{ pibooth_client_login }}.{{ pibooth_domain }}/public/{picture}
 pibooth_qrcode_pibooth_foreground: (255, 255, 255)
 pibooth_qrcode_pibooth_background: (0, 0, 0)
 pibooth_qrcode_pibooth_side_text: Scannez-moi
